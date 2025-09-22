@@ -1,0 +1,65 @@
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  clerkId   String    @unique
+  email     String    @unique
+  contents  Content[]
+  points    Int       @default(100)
+  plan     PlanType    @default(FREE)
+  payments  Payment[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+
+
+
+model Payment {
+  id          String     @id @default(cuid())
+  userId      Int
+  user        User       @relation(fields: [userId], references: [id])
+  amount      Int        // in paise (e.g., ₹500 = 50000)
+  currency    String     @default("INR")
+  status      String     @default("pending") // "success", "failed"
+  provider    String     @default("razorpay")
+  paymentId   String?    // razorpay_payment_id
+  orderId     String?    // razorpay_order_id
+  plan        PlanType
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([userId])
+  @@index([paymentId])
+}
+
+
+
+
+
+
+enum PlanType {
+  FREE
+  BASIC
+  PREMIUM
+}
+model Content {
+  id        Int      @id @default(autoincrement())
+  title     String
+  platform  String
+  content   String
+  style     String?
+  tone      String?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+}
