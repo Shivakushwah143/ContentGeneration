@@ -41,11 +41,7 @@ export default function LinkedInPostEmbed({
       {/* Post preview image */}
       {postImage && (
         <div className="mt-3 rounded-lg overflow-hidden border border-gray-700">
-          <img
-            src={postImage}
-            alt="LinkedIn Post"
-            className="w-full  object-cover"
-          />
+       
         </div>
       )}
 
