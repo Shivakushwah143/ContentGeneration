@@ -4,7 +4,6 @@ import { PrismaClient, type Content, type User } from "@prisma/client";
 import { NextResponse, NextRequest } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 
-import dotenv from "dotenv";
 import {
   buildSystemPrompt,
   formatStructureStyle,
@@ -14,7 +13,6 @@ import {
 } from "@/app/lib/prompt";
 import clerk from "@clerk/clerk-sdk-node";
 import { getPlanCredits, type PlanName } from "@/app/lib/plans";
-dotenv.config();
 
 const client = new PrismaClient();
 const DEEPSEEK_ENDPOINT = "https://api.deepseek.com/v1/chat/completions";
