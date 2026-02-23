@@ -397,17 +397,17 @@
 "use client";
 import { useEffect, useState } from "react";
 import {
-    FaBolt,
-    FaClockRotateLeft,
-    FaInstagram,
-    FaLinkedinIn,
-    FaRegClock,
-    FaXTwitter,
-} from "react-icons/fa6";
+    Bolt,
+    Clock3,
+    Copy,
+    History,
+    Instagram,
+    Linkedin,
+    Loader2,
+    Twitter,
+    X,
+} from "lucide-react";
 import axios from "axios";
-import { FaRegCopy } from "react-icons/fa6";
-import { PiSpinnerLight } from "react-icons/pi";
-import { IoMdClose } from "react-icons/io";
 
 export default function ContentGenerator() {
     const [prompt, setPrompt] = useState("");
@@ -495,7 +495,7 @@ export default function ContentGenerator() {
                                     onClick={() => setIsContentVisible(false)}
                                     className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
                                 >
-                                    <IoMdClose className="w-6 h-6" />
+                                    <X className="w-6 h-6" />
                                 </button>
                             </div>
                             <div
@@ -511,7 +511,7 @@ export default function ContentGenerator() {
                                 }}
                                 className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
                             >
-                                <FaRegCopy />
+                                <Copy className="h-4 w-4" />
                                 Copy Content
                             </button>
                         </div>
@@ -526,11 +526,11 @@ export default function ContentGenerator() {
                                 Generate Content
                             </h2>
                             <div className="flex items-center gap-2 mb-4">
-                                <FaBolt className="text-yellow-500" />
+                                <Bolt className="text-yellow-500" />
                                 {points !== null ? (
-                                    <span className="text-lg font-semibold">{points} Points</span>
+                                    <span className="text-lg font-semibold">{points} Credits</span>
                                 ) : (
-                                    <PiSpinnerLight className="animate-spin size-5" />
+                                    <Loader2 className="animate-spin size-5" />
                                 )}
                             </div>
                             <div className="space-y-4">
@@ -580,7 +580,7 @@ export default function ContentGenerator() {
                                             Generating...
                                         </span>
                                     ) : (
-                                        "Generate Content 10 Points"
+                                        "Generate Content"
                                     )}
                                 </button>
                             </div>
@@ -601,7 +601,7 @@ export default function ContentGenerator() {
                                 className="p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full"
                                 title="Copy to clipboard"
                             >
-                                <FaRegCopy className="w-5 h-5" />
+                                <Copy className="w-5 h-5" />
                             </button>
                         </div>
                         <div
@@ -619,12 +619,12 @@ export default function ContentGenerator() {
                     <h2 className="text-xl font-bold text-gray-900 dark:text-white">
                         History
                     </h2>
-                    <FaClockRotateLeft className="w-5 h-5" />
+                    <History className="w-5 h-5" />
                 </div>
 
                 {loadingHistory && contentArray.length === 0 && (
                     <div className="flex items-center justify-center py-8">
-                        <PiSpinnerLight className="animate-spin size-6" />
+                        <Loader2 className="animate-spin size-6" />
                     </div>
                 )}
 
@@ -637,11 +637,11 @@ export default function ContentGenerator() {
                         >
                             <div className="flex items-center gap-2 font-bold mb-2">
                                 {thread.platform === "X" ? (
-                                    <FaXTwitter />
+                                    <Twitter />
                                 ) : thread.platform === "Instagram" ? (
-                                    <FaInstagram />
+                                    <Instagram />
                                 ) : thread.platform === "LinkedIn" ? (
-                                    <FaLinkedinIn />
+                                    <Linkedin />
                                 ) : (
                                     ""
                                 )}
@@ -649,7 +649,7 @@ export default function ContentGenerator() {
                             </div>
                             <div className="mb-2 line-clamp-2">{thread.title}</div>
                             <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                                <FaRegClock className="w-3 h-3" />
+                                <Clock3 className="w-3 h-3" />
                                 <div>{new Date(thread.createdAt).toLocaleDateString()}</div>
                             </div>
                         </div>

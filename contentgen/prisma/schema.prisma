@@ -14,9 +14,12 @@ model User {
   clerkId   String    @unique
   email     String    @unique
   contents  Content[]
-  points    Int       @default(100)
+  creditsRemaining     Int       @default(50)
   plan     PlanType    @default(FREE)
+  subscriptionStartDate DateTime @default(now())
+  subscriptionEndDate   DateTime @default(now())
   payments  Payment[]
+  paymentRequests PaymentRequest[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 }
@@ -42,6 +45,21 @@ model Payment {
   @@index([paymentId])
 }
 
+model PaymentRequest {
+  id            String               @id @default(cuid())
+  userId        Int
+  user          User                 @relation(fields: [userId], references: [id])
+  plan          PlanType
+  amount        Int
+  transactionId String               @unique
+  status        PaymentRequestStatus @default(PENDING)
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+
+  @@index([userId])
+  @@index([status])
+}
+
 
 
 
@@ -49,8 +67,14 @@ model Payment {
 
 enum PlanType {
   FREE
-  BASIC
-  PREMIUM
+  PRO
+  BUSINESS
+}
+
+enum PaymentRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }
 model Content {
   id        Int      @id @default(autoincrement())

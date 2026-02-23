@@ -3,8 +3,7 @@ import { useEffect } from 'react'
 import Script from 'next/script'
 import LinkedInPostEmbed from '@/components/sections/LinkedInPostEmbed'
 import InstagramPostEmbed from '@/components/sections/InstagramPostEmbed'
-import { FaLinkedin, FaInstagram } from 'react-icons/fa'
-import { SiX } from 'react-icons/si'
+import { Instagram, Linkedin, Twitter } from 'lucide-react'
 
 const SocialMediaEmbeds = () => {
   useEffect(() => {
@@ -14,7 +13,7 @@ const SocialMediaEmbeds = () => {
   }, [])
 
   return (
-    <div className="px-4 py-8 bg-gradient-to-br from-gray-900 to-gray-800 min-h-screen">
+    <div className="min-h-screen px-4 py-12">
       {/* Twitter Widgets Script */}
       <Script
         src="https://platform.twitter.com/widgets.js"
@@ -26,19 +25,27 @@ const SocialMediaEmbeds = () => {
         }}
       />
 
-      <h1 className="text-4xl font-bold text-center mb-12 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600">
-        Featured Social Media Posts
-      </h1>
+      <div className="mx-auto max-w-4xl text-center">
+        <div className="inline-flex items-center rounded-full border border-border/60 bg-background/70 px-4 py-1.5 text-sm text-muted-foreground">
+          Real-world results
+        </div>
+        <h1 className="mt-4 text-4xl font-semibold">
+          Featured community highlights
+        </h1>
+        <p className="mt-3 text-muted-foreground">
+          See how creators, teams, and founders are using SoleScript to publish faster.
+        </p>
+      </div>
       
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 ">
+      <div className="mx-auto mt-12 grid max-w-6xl grid-cols-1 gap-8 lg:grid-cols-3">
         {/* Twitter (X) Column */}
         <div className="space-y-6">
-          <div className="bg-gray-800 rounded-2xl shadow-xl border border-gray-700 overflow-hidden">
-            <div className="p-5 flex items-center space-x-3 border-b border-gray-700 bg-gray-900">
-              <div className="bg-black p-2 rounded-full">
-                <SiX className="text-white text-xl" />
+          <div className="overflow-hidden rounded-2xl border border-border/60 bg-background/70 shadow-lg">
+            <div className="flex items-center space-x-3 border-b border-border/60 bg-muted/50 p-5">
+              <div className="rounded-full bg-black p-2">
+                <Twitter className="text-white h-5 w-5" />
               </div>
-              <h2 className="text-xl font-bold text-white">Twitter Posts</h2>
+              <h2 className="text-xl font-semibold">X Posts</h2>
             </div>
             <div className="space-y-4 p-5">
               <div className="rounded-lg overflow-hidden">
@@ -57,12 +64,12 @@ const SocialMediaEmbeds = () => {
 
         {/* Instagram Column */}
         <div className="space-y-6">
-          <div className="bg-gray-800 rounded-2xl shadow-xl border border-gray-700 overflow-hidden">
-            <div className="p-5 flex items-center space-x-3 border-b border-gray-700 bg-gray-900">
-              <div className="bg-gradient-to-tr from-purple-500 to-pink-500 p-2 rounded-full">
-                <FaInstagram className="text-white text-xl" />
+          <div className="overflow-hidden rounded-2xl border border-border/60 bg-background/70 shadow-lg">
+            <div className="flex items-center space-x-3 border-b border-border/60 bg-muted/50 p-5">
+              <div className="rounded-full bg-gradient-to-tr from-rose-500 to-amber-400 p-2">
+                <Instagram className="text-white h-5 w-5" />
               </div>
-              <h2 className="text-xl font-bold text-white">Instagram Posts</h2>
+              <h2 className="text-xl font-semibold">Instagram Posts</h2>
             </div>
             <div className="space-y-4 p-5">
               <div className="rounded-lg overflow-hidden">
@@ -77,12 +84,12 @@ const SocialMediaEmbeds = () => {
 
         {/* LinkedIn Column */}
         <div className="space-y-6">
-          <div className="bg-gray-800 rounded-2xl shadow-xl border border-gray-700 overflow-hidden">
-            <div className="p-5 flex items-center space-x-3 border-b border-gray-700 bg-gray-900">
-              <div className="bg-blue-600 p-2 rounded-full">
-                <FaLinkedin className="text-white text-xl" />
+          <div className="overflow-hidden rounded-2xl border border-border/60 bg-background/70 shadow-lg">
+            <div className="flex items-center space-x-3 border-b border-border/60 bg-muted/50 p-5">
+              <div className="rounded-full bg-sky-600 p-2">
+                <Linkedin className="text-white h-5 w-5" />
               </div>
-              <h2 className="text-xl font-bold text-white">LinkedIn Posts</h2>
+              <h2 className="text-xl font-semibold">LinkedIn Posts</h2>
             </div>
             <div className="space-y-4 p-5">
               <div className="rounded-lg overflow-hidden">

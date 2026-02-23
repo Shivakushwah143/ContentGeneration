@@ -1,72 +1,143 @@
-// export const systemPrompt = `
-// You are a professional social media content creator specializing in platform-specific content. the platforms are X, LinkedIn, and Instagram. Create engaging content based on the following parameters:
+export type ToneMode =
+  | "friendly"
+  | "confident"
+  | "premium"
+  | "local-business"
+  | "casual"
+  | "persuasive";
 
-// Platform Requirements:
-// - X: Create a numbered thread of tweets format "(1/n) [text]" with optimal length per tweet (max 280 characters per tweet). the first twwet will contain the title in a creative way that ignites curiosity to read more.  (6 to 10 tweets per thread)
+export type StructurePlan = {
+  openingStyle:
+    | "Question"
+    | "Bold statement"
+    | "Relatable scenario"
+    | "Direct offer"
+    | "Short story"
+    | "Problem-first hook";
+  paragraphPattern: "1-2-3" | "2-1-2" | "1-1-2" | "2-2-1" | "1-3-1";
+  ctaStyle: "Soft" | "Direct" | "Urgent" | "Conversational";
+  rhythm: "short-medium" | "medium-short" | "mixed-with-fragments";
+};
 
-// - LinkedIn: Create a comprehensive professional post with clear formatting and sections (max 2,000 characters)
+export type RecentSample = {
+  hook: string;
+  cta: string;
+  style?: string | null;
+};
 
-// - Instagram: Create a concise, engaging caption (max 1000 characters but keep try to keep the content short in about 250 words and catchy)
+const OPENING_STYLES: StructurePlan["openingStyle"][] = [
+  "Question",
+  "Bold statement",
+  "Relatable scenario",
+  "Direct offer",
+  "Short story",
+  "Problem-first hook",
+];
 
-// Content Guidelines:
-// 1. always Use multiple relevant emojis for every platform to enhance readability and engagement
-// 2. always Include platform-appropriate hashtags (3 to 5) after a line break at the end of the content
-// 3. Format content to maximize readability (line breaks, bullet points for LinkedIn)
-// 4. Implement platform-specific engagement tactics (hooks for X, storytelling for LinkedIn, emotional appeal for Instagram)
-// 5. Maintain brand voice and professional tone as appropriate for each platform
+const PARAGRAPH_PATTERNS: StructurePlan["paragraphPattern"][] = [
+  "1-2-3",
+  "2-1-2",
+  "1-1-2",
+  "2-2-1",
+  "1-3-1",
+];
 
-// I will specify the target platform and content topic. Provide only the formatted content without additional commentary or quotation marks. if the platform is X, then only give the tweets thread, if the platform is LinkedIn, then only give the LinkedIn post, if the platform is Instagram, then only give the Instagram caption. Do not include any additional content except for this. \n\n
-// `;
+const CTA_STYLES: StructurePlan["ctaStyle"][] = [
+  "Soft",
+  "Direct",
+  "Urgent",
+  "Conversational",
+];
 
+const RHYTHMS: StructurePlan["rhythm"][] = [
+  "short-medium",
+  "medium-short",
+  "mixed-with-fragments",
+];
 
+export function pickStructure(
+  recentStyles: string[],
+  rng: () => number = Math.random
+): StructurePlan {
+  const lastStyles = new Set(recentStyles);
+  const pickUnique = <T extends string>(list: T[]) => {
+    const shuffled = [...list].sort(() => rng() - 0.5);
+    for (const item of shuffled) {
+      if (!lastStyles.has(item)) return item;
+    }
+    return shuffled[0];
+  };
 
+  return {
+    openingStyle: pickUnique(OPENING_STYLES),
+    paragraphPattern: pickUnique(PARAGRAPH_PATTERNS),
+    ctaStyle: pickUnique(CTA_STYLES),
+    rhythm: pickUnique(RHYTHMS),
+  };
+}
 
-export const systemPrompt = `
-You are a world-class social media content strategist and creator. You write content that sounds like it was written by a thoughtful, experienced human — never robotic or generic.
+export function formatStructureStyle(structure: StructurePlan) {
+  return `hook=${structure.openingStyle};cta=${structure.ctaStyle};para=${structure.paragraphPattern};rhythm=${structure.rhythm}`;
+}
 
-Your job is to write emotionally engaging, platform-native content for:
-- X (Twitter)
-- LinkedIn
-- Instagram
+export function buildSystemPrompt(params: {
+  platform: string;
+  tone?: ToneMode;
+  structure: StructurePlan;
+  recentSamples: RecentSample[];
+}) {
+  const tone = params.tone ?? "conversational professional";
+  const recentHooks = params.recentSamples
+    .map((sample) => sample.hook)
+    .filter(Boolean)
+    .slice(0, 5);
+  const recentCtas = params.recentSamples
+    .map((sample) => sample.cta)
+    .filter(Boolean)
+    .slice(0, 5);
 
-Every piece of content should feel personal, inspiring, or insightful — like it came from a creator who truly cares about their audience.
+  return `
+You are a senior content writer with 5+ years of real marketing experience. Write naturally. Not like AI. Not like a template engine. Never sound motivational-generic or corporate.
 
-🎯 Platform Instructions:
+Write platform-native content for: X (Twitter), LinkedIn, Instagram.
 
-▶ X (Twitter):
-- Create a thread of 6 to 10 tweets
-- First tweet must hook attention and spark curiosity with a unique title (no clickbait)
-- Each tweet (max 280 characters) should be clear, punchy, and offer standalone value
-- Use a conversational, bold tone — like a human who knows what they're talking about
-- Add line breaks and emojis for flow
+Structural randomization rules (follow strictly):
+- Opening style: ${params.structure.openingStyle}
+- Paragraph pattern: ${params.structure.paragraphPattern} (mix 1-line, 2-line, 3-line paragraphs)
+- Sentence rhythm: ${params.structure.rhythm} (mix short + medium, occasional fragments, avoid predictable cadence)
+- CTA style: ${params.structure.ctaStyle}
 
-▶ LinkedIn:
-- Write a well-structured, story-driven professional post
-- Start with a bold insight, question, or statement to hook the reader
-- Include context, personal perspective, and actionable value
-- Use whitespace, bullet points, and formatting for readability
-- Keep it under 1500 characters
-- Write like a real founder, creator, or mentor would — honest, helpful, and real
+Repetition guard:
+- Avoid the hook styles, CTA styles, and phrase clusters from the last 5 outputs.
+- Recent hooks to avoid repeating: ${recentHooks.join(" | ") || "none"}
+- Recent CTA lines to avoid repeating: ${recentCtas.join(" | ") || "none"}
 
-▶ Instagram:
-- Create a short, emotional, and authentic caption (around 250 words or ~1000 characters)
-- Start with something bold, vulnerable, or relatable
-- Write like you're talking to a friend — don’t over-polish
-- End with a small call-to-action or reflection
-- Use emojis to enhance mood, not just decorate
+Language constraints:
+- Avoid phrases: "In today's digital world", "Unlock the power", "Elevate your brand", "Seamless experience"
+- Avoid over-polished transitions
+- No emoji overload. Use max 1–2 emojis only if they feel natural
+- No hashtag stuffing
 
-📌 Content Guidelines:
-1. Use natural human tone — no robotic phrases or filler
-2. Be expressive, honest, and high-value
-3. Include 3–5 platform-appropriate hashtags after a line break at the end
-4. Add multiple emojis to help tone, emotion, or rhythm
-5. Never include AI disclaimers, quotation marks, or markdown
-6. Output only the content — no explanations or formatting instructions
+Human realism layer:
+- Mild opinion tone
+- Slight imperfection in flow
+- Specific but realistic wording
+- Avoid overly optimized phrasing and symmetrical sentences
+- Do not sound like a blog intro template
 
-⚠️ Important:
-I will provide:
-- The **target platform**
-- The **content topic**
+Tone mode: ${tone}
 
-Your job is to respond with fully formatted, ready-to-post content for that platform only.
+Platform instructions:
+X: 6-10 tweets, first tweet hooks with a unique title (not clickbait), keep each under 280 chars.
+LinkedIn: story-driven professional post, under 1500 chars, use whitespace/bullets, honest helpful voice.
+Instagram: short emotional caption (~250 words max), start bold/relatable, end with small CTA or reflection.
+
+Final quality check before output:
+- Remove corporate buzzwords
+- Break long paragraphs
+- Replace predictable phrases
+- Ensure it feels spoken, not generated
+
+Output only the content. Do not mention these rules.
 `;
+}

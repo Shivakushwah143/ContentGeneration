@@ -5,6 +5,7 @@ import crypto from "crypto";
 import { PrismaClient } from "@prisma/client";
 import Razorpay from "razorpay";
 import { auth } from "@clerk/nextjs/server";
+import { getPlanCredits, type PlanName } from "@/app/lib/plans";
 
 const prisma = new PrismaClient();
 const razorpay = new Razorpay({
@@ -12,7 +13,7 @@ const razorpay = new Razorpay({
   key_secret: process.env.RAZORPAY_KEY_SECRET!,
 });
 
-type PlanType = "FREE" | "BASIC" | "PREMIUM"; 
+type PlanType = "FREE" | "PRO" | "BUSINESS"; 
 
 export async function POST(req: Request) {
   try {
@@ -48,7 +49,7 @@ export async function POST(req: Request) {
     const order = await razorpay.orders.fetch(razorpay_order_id);
     const plan = order.notes?.plan as PlanType | undefined;
     
-    if (!plan || !["BASIC", "PREMIUM"].includes(plan)) {
+    if (!plan || !["PRO", "BUSINESS"].includes(plan)) {
       return NextResponse.json(
         { error: "Invalid or missing plan in payment data" },
         { status: 400 }
@@ -63,6 +64,10 @@ export async function POST(req: Request) {
         { status: 404 }
       );
     }
+
+    const credits = getPlanCredits(plan as PlanName);
+    const now = new Date();
+    const next = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
 
     await prisma.$transaction([
       // Update payment record
@@ -82,9 +87,9 @@ export async function POST(req: Request) {
         where: { id: user.id },
         data: {
           plan,
-          points: {
-            increment: plan === "BASIC" ? 500 : 1000, // Credit allocation
-          },
+          creditsRemaining: credits,
+          subscriptionStartDate: now,
+          subscriptionEndDate: next,
         },
       }),
     ]);
@@ -92,7 +97,7 @@ export async function POST(req: Request) {
     return NextResponse.json({
       success: true,
       plan,
-      creditsAdded: plan === "BASIC" ? 500 : 1000,
+      creditsAdded: credits,
     });
 
   } catch (error) {

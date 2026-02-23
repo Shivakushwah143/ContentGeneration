@@ -4,12 +4,13 @@ import { Button } from "./ui/button";
 
 import { loadRazorpay } from "@/lib/razorpay";
 import { useRouter } from "next/navigation"; // Add this import
+import type { PlanName } from "@/app/lib/plans";
 
 export function PaymentButton({
   plan,
   className = ""
 }: {
-  plan: "BASIC" | "PREMIUM";
+  plan: Exclude<PlanName, "FREE">;
   className?: string;
 }) {
   const [isLoading, setIsLoading] = useState(false);
@@ -95,7 +96,7 @@ export function PaymentButton({
       className={className}
       disabled={isLoading}
     >
-      {isLoading ? "Processing..." : `Get ${plan} Plan`}
+      {isLoading ? "Processing..." : plan === "PRO" ? "Upgrade to Pro" : "Upgrade to Business"}
     </Button>
   );
 }

@@ -1,12 +1,11 @@
 import { Marquee } from "@/components/ui/marquee";
-import { FaInstagram, FaLinkedinIn } from "react-icons/fa";
-import { FaXTwitter } from "react-icons/fa6";
+import { Instagram, Linkedin, Twitter } from "lucide-react";
 
 const MarqueeComponent = () => {
   const arr = [
-    { logo: FaLinkedinIn, name: "LinkedIn" },
-    { logo: FaInstagram, name: "Instagram" },
-    { logo: FaXTwitter, name: "X" },
+    { logo: Linkedin, name: "LinkedIn" },
+    { logo: Instagram, name: "Instagram" },
+    { logo: Twitter, name: "X" },
   ];
 
   return (
@@ -14,9 +13,9 @@ const MarqueeComponent = () => {
       {arr.map(({ logo: Logo, name }, index) => (
         <div
           key={index}
-          className="relative h-full w-full mx-12 flex items-center justify-center text-4xl font-bold dark:text-white text-black"
+          className="relative h-full w-full mx-12 flex items-center justify-center text-2xl font-semibold text-foreground/80"
         >
-          <Logo />
+          <Logo className="h-6 w-6" />
          
           <span className="ml-2">{name}</span>
         </div>

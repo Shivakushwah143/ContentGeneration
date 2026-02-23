@@ -1,8 +1,8 @@
-
 import { NextResponse } from "next/server";
 import Razorpay from "razorpay";
 import { auth } from "@clerk/nextjs/server";
 import { PrismaClient } from "@prisma/client";
+import { RAZORPAY_PRICES } from "@/app/lib/plans";
 
 const client = new PrismaClient();
 const razorpay = new Razorpay({
@@ -10,11 +10,7 @@ const razorpay = new Razorpay({
   key_secret: process.env.RAZORPAY_KEY_SECRET!,
 });
 
-type PlanName = "BASIC" | "PREMIUM";
-const PLAN_PRICES: Record<PlanName, number> = {
-  BASIC: 50000,  // ₹500 in paise
-  PREMIUM: 90000 // ₹900 in paise
-};
+type PlanName = keyof typeof RAZORPAY_PRICES;
 
 export async function POST(req: Request) {
   try {
@@ -25,26 +21,23 @@ export async function POST(req: Request) {
 
     const { plan }: { plan: PlanName } = await req.json();
 
-    // Validate plan type
-    if (!PLAN_PRICES[plan]) {
+    if (!RAZORPAY_PRICES[plan]) {
       return NextResponse.json(
         { error: "Invalid plan specified" },
         { status: 400 }
       );
     }
 
-    // Get user from database
-    const user = await client.user.findUnique({ 
-      where: { clerkId: userId } 
+    const user = await client.user.findUnique({
+      where: { clerkId: userId },
     });
-    
+
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // Create Razorpay order
     const order = await razorpay.orders.create({
-      amount: PLAN_PRICES[plan],
+      amount: RAZORPAY_PRICES[plan],
       currency: "INR",
       notes: {
         userId,
@@ -52,11 +45,10 @@ export async function POST(req: Request) {
       },
     });
 
-    // Create payment record in database
     await client.payment.create({
       data: {
         userId: user.id,
-        amount: PLAN_PRICES[plan],
+        amount: RAZORPAY_PRICES[plan],
         currency: "INR",
         status: "pending",
         provider: "razorpay",
@@ -72,13 +64,12 @@ export async function POST(req: Request) {
       currency: order.currency,
       key: process.env.RAZORPAY_KEY_ID,
     });
-
   } catch (error) {
     console.error("Payment creation error:", error);
     return NextResponse.json(
-      { 
+      {
         error: "Payment processing failed",
-        details: error instanceof Error ? error.message : "Unknown error"
+        details: error instanceof Error ? error.message : "Unknown error",
       },
       { status: 500 }
     );
