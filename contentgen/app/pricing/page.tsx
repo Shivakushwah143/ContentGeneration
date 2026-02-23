@@ -66,6 +66,7 @@ export default function PricingPage() {
       description: "Generate up to 50 posts every month for free.",
       features: ["Basic templates", "Standard generation speed", "No priority support"],
       cta: "Start Free",
+      badge: null,
     },
     {
       name: "PRO",
@@ -85,6 +86,7 @@ export default function PricingPage() {
       description: "For teams and brands generating content at scale.",
       features: ["All templates", "Priority generation", "Priority support", "Basic analytics"],
       cta: "Upgrade to Business",
+      badge: null,
     },
   ] as const;
 

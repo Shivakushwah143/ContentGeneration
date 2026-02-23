@@ -37,8 +37,8 @@ export default function ContentGenerator() {
             .get("/api/v1/history")
             .then((res) => {
                 setLoadingHistory(false);
-                setPoints(res.data.remainingPoints);
-                setContentArray(res.data.content);
+                setPoints((res.data as any).remainingPoints);
+                setContentArray((res.data as any).content);
             })
             .catch((err) => {
                 setLoadingHistory(false);
@@ -72,9 +72,9 @@ export default function ContentGenerator() {
         try {
             const response = await axios.post("/api/v1/generate", { prompt, platform });
 
-            if (response.data?.content) {
-                setContent(response.data.content);
-                setPoints(response.data.remainingPoints);
+            if ((response.data as any)?.content) {
+                setContent((response.data as any).content);
+                setPoints((response.data as any).remainingPoints);
             } else {
                 throw new Error("No content received from API");
             }

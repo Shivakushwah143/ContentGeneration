@@ -107,11 +107,11 @@ export default function ContentGenerator() {
       .get("/api/v1/history")
       .then((res) => {
         setLoadingHistory(false);
-        setPoints(res.data.remainingPoints);
-        if (res.data.plan) {
-          setPlan(res.data.plan);
+        setPoints((res.data as any).remainingPoints);
+        if ((res.data as any).plan) {
+          setPlan((res.data as any).plan);
         }
-        setContentArray(res.data.content || []);
+        setContentArray((res.data as any).content || []);
       })
       .catch((err) => {
         setLoadingHistory(false);
@@ -140,13 +140,13 @@ export default function ContentGenerator() {
     try {
       const response = await axios.post("/api/v1/generate", { prompt, platform });
 
-      if (response.data?.content) {
-        setContent(response.data.content);
-        if (typeof response.data.remainingPoints === "number") {
-          setPoints(response.data.remainingPoints);
+      if ((response.data as any)?.content) {
+        setContent((response.data as any).content);
+        if (typeof (response.data as any).remainingPoints === "number") {
+          setPoints((response.data as any).remainingPoints);
         }
-        if (response.data.plan) {
-          setPlan(response.data.plan);
+        if ((response.data as any).plan) {
+          setPlan((response.data as any).plan);
         }
       } else {
         throw new Error("No content received from API");

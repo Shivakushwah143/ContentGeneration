@@ -1,7 +1,7 @@
-import clerk from "@clerk/clerk-sdk-node";
+import { clerkClient } from "@clerk/clerk-sdk-node";
 
 export async function requireAdmin(clerkId: string) {
-  const user = await clerk.users.getUser(clerkId);
+  const user = await clerkClient.users.getUser(clerkId);
   const email = user.emailAddresses[0]?.emailAddress?.toLowerCase();
   if (!email) {
     return false;

@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@clerk/clerk-sdk-node": "^5.1.6",
@@ -44,6 +45,7 @@
     "@types/react-dom": "^19",
     "eslint": "^10.0.1",
     "eslint-config-next": "^0.2.4",
+    "globals": "^17.3.0",
     "lodash": "^4.17.21",
     "prisma": "^6.10.1",
     "tailwindcss": "^4",

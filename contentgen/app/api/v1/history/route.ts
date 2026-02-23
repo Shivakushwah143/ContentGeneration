@@ -2,7 +2,7 @@ import { PrismaClient, type Content, type User } from "@prisma/client";
 import { NextResponse, NextRequest } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { getPlanCredits, type PlanName } from "@/app/lib/plans";
-import clerk from "@clerk/clerk-sdk-node";
+import { clerkClient } from "@clerk/clerk-sdk-node";
 
 const client = new PrismaClient();
 
@@ -37,7 +37,7 @@ async function getOrCreateUser(clerkId: string) {
 
   if (user) return user;
 
-  const userObj = await clerk.users.getUser(clerkId);
+  const userObj = await clerkClient.users.getUser(clerkId);
   const email = userObj.emailAddresses[0]?.emailAddress;
   if (!email) {
     return null;

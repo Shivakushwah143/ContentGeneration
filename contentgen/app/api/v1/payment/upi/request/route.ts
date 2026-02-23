@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@/app/generated/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { UPI_PRICES, type PlanName } from "@/app/lib/plans";
 
