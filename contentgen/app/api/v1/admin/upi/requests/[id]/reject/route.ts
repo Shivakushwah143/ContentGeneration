@@ -5,7 +5,10 @@ import { requireAdmin } from "@/app/lib/admin";
 
 const client = new PrismaClient();
 
-export async function POST(req: Request, context: { params: { id: string } }) {
+export async function POST(
+  req: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     const { userId } = await auth();
     if (!userId) {
@@ -17,7 +20,7 @@ export async function POST(req: Request, context: { params: { id: string } }) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const requestId = context.params.id;
+    const { id: requestId } = await params;
     const paymentRequest = await client.paymentRequest.findUnique({
       where: { id: requestId },
     });
