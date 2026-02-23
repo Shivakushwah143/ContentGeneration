@@ -11,7 +11,7 @@ import {
   type RecentSample,
   type ToneMode,
 } from "@/app/lib/prompt";
-import clerk from "@clerk/clerk-sdk-node";
+import { clerkClient } from "@clerk/clerk-sdk-node";
 import { getPlanCredits, type PlanName } from "@/app/lib/plans";
 
 const client = new PrismaClient();
@@ -182,7 +182,7 @@ export async function POST(req: NextRequest) {
     }
   
 
-    const userObj = await clerk.users.getUser(userId); 
+    const userObj = await clerkClient.users.getUser(userId);
     const email = userObj.emailAddresses[0]?.emailAddress;
     const clerkId = userObj.id;
     console.log(userObj)
