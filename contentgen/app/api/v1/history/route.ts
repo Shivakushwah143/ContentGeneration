@@ -2,6 +2,7 @@ import { PrismaClient, type Content, type User } from "@prisma/client";
 import { NextResponse, NextRequest } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { getPlanCredits, type PlanName } from "@/app/lib/plans";
+import clerk from "@clerk/clerk-sdk-node";
 
 const client = new PrismaClient();
 
@@ -28,6 +29,38 @@ async function ensureCreditsCurrent(user: UserWithContents) {
   });
 }
 
+async function getOrCreateUser(clerkId: string) {
+  let user = await client.user.findUnique({
+    where: { clerkId },
+    include: { contents: { orderBy: { createdAt: "desc" } } },
+  });
+
+  if (user) return user;
+
+  const userObj = await clerk.users.getUser(clerkId);
+  const email = userObj.emailAddresses[0]?.emailAddress;
+  if (!email) {
+    return null;
+  }
+
+  const now = new Date();
+  const end = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+
+  user = await client.user.create({
+    data: {
+      clerkId,
+      email,
+      plan: "FREE",
+      creditsRemaining: 50,
+      subscriptionStartDate: now,
+      subscriptionEndDate: end,
+    },
+    include: { contents: { orderBy: { createdAt: "desc" } } },
+  });
+
+  return user;
+}
+
 export async function GET(req: NextRequest) {
   try {
     const { userId } = await auth();
@@ -39,13 +72,8 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    let user = await client.user.findUnique({
-      where: {
-        clerkId: userId,
-      },
-      include: { contents: { orderBy: { createdAt: "desc" } } },
-    });
-    console.log(userId);
+    let user = await getOrCreateUser(userId);
+
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
