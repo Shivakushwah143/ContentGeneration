@@ -7,8 +7,10 @@ import { Instagram, Linkedin, Twitter } from 'lucide-react'
 
 const SocialMediaEmbeds = () => {
   useEffect(() => {
-    if (window.twttr) {
-      window.twttr.widgets.load()
+    const twttr = (window as Window & { twttr?: { widgets: { load: () => void } } })
+      .twttr
+    if (twttr) {
+      twttr.widgets.load()
     }
   }, [])
 
@@ -19,8 +21,10 @@ const SocialMediaEmbeds = () => {
         src="https://platform.twitter.com/widgets.js"
         strategy="lazyOnload"
         onLoad={() => {
-          if (window.twttr) {
-            window.twttr.widgets.load()
+          const twttr = (window as Window & { twttr?: { widgets: { load: () => void } } })
+            .twttr
+          if (twttr) {
+            twttr.widgets.load()
           }
         }}
       />
