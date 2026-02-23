@@ -27,7 +27,7 @@
     "lucide-react": "^0.522.0",
     "maath": "^0.10.8",
     "marked": "^15.0.12",
-    "next": "^15.3.4",
+    "next": "15.3.8",
     "next-themes": "^0.4.6",
     "razorpay": "^2.9.6",
     "react": "^19.1.0",
