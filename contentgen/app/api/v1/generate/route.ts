@@ -15,9 +15,9 @@ import { clerkClient } from "@clerk/clerk-sdk-node";
 import { getPlanCredits, type PlanName } from "@/app/lib/plans";
 
 const client = new PrismaClient();
-const DEEPSEEK_ENDPOINT = "https://api.deepseek.com/v1/chat/completions";
-const DEEPSEEK_MODEL = "deepseek-chat";
-const DEEPSEEK_TIMEOUT_MS = 30000;
+const GROQ_ENDPOINT = "https://api.groq.com/openai/v1/chat/completions";
+const GROQ_MODEL = "llama-3.3-70b-versatile";
+const GROQ_TIMEOUT_MS = 30000;
 
 async function getUser(email: string, clerkId?: string) {
   let user = await client.user.findUnique({ where: { email } });
@@ -69,43 +69,43 @@ async function ensureCreditsCurrent(user: User) {
   });
 }
 
-type DeepSeekMessage = { role: "system" | "user"; content: string };
-type DeepSeekResponse = {
+type GroqMessage = { role: "system" | "user"; content: string };
+type GroqResponse = {
   choices: Array<{ message: { content: string } }>;
 };
 
 async function getContent(systemPrompt: string, userPrompt: string) {
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), DEEPSEEK_TIMEOUT_MS);
+  const timeoutId = setTimeout(() => controller.abort(), GROQ_TIMEOUT_MS);
 
   try {
-    const response = await fetch(DEEPSEEK_ENDPOINT, {
+    const response = await fetch(GROQ_ENDPOINT, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.DEEPSEEK_API}`,
+        Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
       },
       body: JSON.stringify({
-        model: DEEPSEEK_MODEL,
+        model: GROQ_MODEL,
         temperature: 0.8,
         max_tokens: 800,
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt },
-        ] as DeepSeekMessage[],
+        ] as GroqMessage[],
       }),
       signal: controller.signal,
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      throw new Error(`DeepSeek error: ${response.status} ${errorText}`);
+      throw new Error(`Groq error: ${response.status} ${errorText}`);
     }
 
-    const data = (await response.json()) as DeepSeekResponse;
+    const data = (await response.json()) as GroqResponse;
     const content = data.choices?.[0]?.message?.content;
     if (!content) {
-      throw new Error("DeepSeek error: empty response");
+      throw new Error("Groq error: empty response");
     }
     return content;
   } finally {
